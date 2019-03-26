@@ -28,7 +28,7 @@ private:
 private:
 	QQmlComponent *m_component;
 	QQuickItem *m_keyboard;
-	QPointer<QQuickView> m_focusWindow;
+    QPointer<QQuickWindow> m_focusWindow;
 }; /* -----  end of class InputContextEmbedded  ----- */
 
 #endif /* end of include guard: INPUTCONTEXTEMBEDDED_H_TVQEKXFO */

@@ -12,7 +12,7 @@ public:
 	~InputContext();
 
 	bool isValid() const;
-
+    virtual void update(Qt::InputMethodQueries queries);
 	void showInputPanel();
 	void hideInputPanel();
 	bool isInputPanelVisible() const;

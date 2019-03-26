@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQuickView>
+#include <QDebug>
 #include <QUrl>
 
 int main(int argc, char *argv[])
@@ -9,9 +10,12 @@ int main(int argc, char *argv[])
 	{
 		QCoreApplication a(argc, argv);
 		QStringList path = QGuiApplication::applicationDirPath().split("/");
+        qDebug() << "path" << path;
+
 		path.pop_back();
 		path.pop_back();
 		libPath = path.join("/");
+        qDebug() << "libpath" << libPath;
 	}
 	QGuiApplication::addLibraryPath(libPath);
 	QGuiApplication app(argc, argv);

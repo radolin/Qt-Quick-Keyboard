@@ -16,7 +16,7 @@ InputContextEmbedded::InputContextEmbedded(const QString &mainFile):
 	m_keyboard(0)
 {
 	registerQmlTypes();
-	connect(this, SIGNAL(focusObjectChanged(QObject*)), this, SLOT(onFocusObjectChanged(QObject*)));
+    connect(this, SIGNAL(focusObjectChanged(QObject*)), this, SLOT(onFocusObjectChanged(QObject*)));
 }
 
 InputContextEmbedded::~InputContextEmbedded()
@@ -28,25 +28,38 @@ QRectF InputContextEmbedded::keyboardRect() const
 	if (!m_keyboard) {
 		return QRectF();
 	}
-	return m_keyboard->property("geometry").toRectF();
+    return m_keyboard->property("geometry").toRectF();
 }
 
 void InputContextEmbedded::showInputPanel()
 {
-	if (!m_component || !m_focusWindow) {
-		m_focusWindow = qobject_cast<QQuickView *>(QGuiApplication::focusWindow());
-		if (m_focusWindow) {
-			m_component = new QQmlComponent(m_focusWindow->engine(), QUrl(mainFile()), m_focusWindow->rootObject());
-			if (m_component->isLoading()) {
-				connect(m_component, SIGNAL(statusChanged(QDeclarativeComponent::Status)), this, SLOT(embedKeyboard()));
+    qWarning() << "Showing input panel";
+
+    if (!m_keyboard) {
+        m_focusWindow = qobject_cast<QQuickWindow *>(QGuiApplication::focusWindow());
+        qWarning() << "class" << m_focusWindow->metaObject()->className() ;
+        qWarning() << "parent" <<m_focusWindow->parent();
+
+            if (m_focusWindow) {
+
+                m_keyboard = m_focusWindow->findChild<QQuickItem *>("radokey");
+
+                if (!m_keyboard) {
+                    qWarning() << "Can't find keyboard!!!";
+                    return;
+                }
+                qWarning() << "Found keyboard: " <<m_keyboard->metaObject()->className();
+
+                qWarning() << "Found keyboard: " <<m_keyboard->objectName();
+
+                connect(m_keyboard, SIGNAL(geometryChanged()), this, SLOT(onKeyboardRectChanged()));
+
 			}
-			else {
-				embedKeyboard();
-			}
-		}
-	}
-	InputContext::showInputPanel();
-	updateVisibility();
+    }
+    qWarning() << "Already set keyboard ";
+
+    InputContext::showInputPanel();
+    updateVisibility();
 }
 
 void InputContextEmbedded::hideInputPanel()
@@ -56,7 +69,7 @@ void InputContextEmbedded::hideInputPanel()
 }
 
 void InputContextEmbedded::embedKeyboard()
-{
+{/*
 	if (m_component->isError()) {
 		qWarning() << m_component->errors();
 		return;
@@ -81,22 +94,30 @@ void InputContextEmbedded::embedKeyboard()
 	updateVisibility();
 
 	m_component->completeCreate();
-	connect(m_keyboard, SIGNAL(geometryChanged()), this, SLOT(onKeyboardRectChanged()));
+    connect(m_keyboard, SIGNAL(geometryChanged()), this, SLOT(onKeyboardRectChanged()));*/
 }
 
 void InputContextEmbedded::onFocusObjectChanged(QObject *focusObject)
 {
 	if (m_keyboard) {
 		QuickKeyboard::KeyboardItem *kbd = m_keyboard->findChild<QuickKeyboard::KeyboardItem *>("QuickKeyboard");
-		kbd->dispatcher()->setFocusObject(focusObject);
+        if (kbd) {
+//             qWarning() << "Focus changed to " << focusObject->metaObject()->className();
+        kbd->dispatcher()->setFocusObject(focusObject);
+        }
+        else  qWarning() << "Couldn't get dispatcher";
+
 	}
 }
 
 void InputContextEmbedded::updateVisibility()
 {
 	if (m_keyboard) {
+         qWarning() << "Updating visibility offf" << m_keyboard->objectName() << " to " <<isInputPanelVisible();
 		m_keyboard->setProperty("isVisible", isInputPanelVisible());
-	}
+    } else {
+        qWarning() << "Couldn't update visibility, no m_keyboard!!!" ;
+    }
 }
 
 void InputContextEmbedded::onKeyboardRectChanged()

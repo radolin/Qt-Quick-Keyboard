@@ -7,6 +7,7 @@ QPlatformInputContext *InputContextPlugin::create(const QString &system, const Q
 
 	QByteArray mainFile = qgetenv("QUICKKEYBOARD_MAIN_FILE");
 	if (system.compare(system, QStringLiteral("quickkeyboard"), Qt::CaseInsensitive) == 0) {
+        qWarning() << "loading mockup plugin ...";
 		return new InputContextEmbedded(QString(mainFile));
 	}
 	return 0;
