@@ -106,7 +106,7 @@ void ModeItem::setModifiersInactive()
 {
 	foreach (ButtonItem *button, m_buttons) {
 		if (button->isModifier()) {
-			button->setActive(false);
+            //button->setActive(false);
 		}
 	}
 }
